@@ -72,4 +72,3 @@
 
 - name: Save the token in local file
   local_action: copy content={{ token.stdout }} dest=./token.txt
-
