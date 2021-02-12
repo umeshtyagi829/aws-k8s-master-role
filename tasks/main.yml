@@ -36,7 +36,7 @@
     name: docker
     state: restarted
 - name: initialising kubeadm
-  shell: "kubeadm init --pod-network-cidr=10.244.0.0/16 --iignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
+  command: "kubeadm init --pod-network-cidr=10.244.0.0/16 --iignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
   ignore_errors: yes
 - name: creating .kube directory
   file:
@@ -48,16 +48,15 @@
         state: absent
   ignore_errors: yes
 - name: commands
-  shell:
-      cmd: "{{ item.command }}"
+  shell: "{{ item.command }}"
   loop:
   - { command: "cp -i /etc/kubernetes/admin.conf $HOME/.kube/config" }
   - { command: "sudo chown $(id -u):$(id -g) $HOME/.kube/config" }
 - name: setup flannel
-  shell: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"  
+  command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"  
   ignore_errors: yes
 - name: Creating Token for worker node
-  shell: "kubeadm token create --print-join-command"
+  command: "kubeadm token create --print-join-command"
   register: token
 - name: Save the token in local file
   local_action: copy content={{ token.stdout }} dest=./token.txt
